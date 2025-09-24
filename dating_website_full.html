@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>缘来相亲网</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "微软雅黑", sans-serif; background: #f5f5f5; color: #333; }
+        header { background: linear-gradient(90deg, #ff6b81, #ff878f); color: #fff; padding: 20px; text-align: center; }
+        nav { background: #ff878f; display: flex; justify-content: center; gap: 20px; padding: 10px 0; }
+        nav a { color: #fff; text-decoration: none; font-weight: bold; }
+        main { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+        section { margin-bottom: 40px; }
+        .card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        h2 { margin-bottom: 20px; color: #ff6b81; }
+        label { display: block; margin: 10px 0 5px; }
+        input, select, textarea { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+        button { background: #ff6b81; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        #profileList .profile-card { display: flex; align-items: center; gap: 20px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        #profileList img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+        footer { text-align: center; padding: 20px 0; background: #ff6b81; color: #fff; }
+        @media (max-width: 600px) { #profileList .profile-card { flex-direction: column; text-align: center; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>缘来相亲网</h1>
+        <p>为你找到心仪的TA</p>
+    </header>
+    <nav>
+        <a href="#register">注册</a>
+        <a href="#profiles">会员展示</a>
+        <a href="#contact">联系我们</a>
+    </nav>
+    <main>
+        <section id="register" class="card">
+            <h2>注册资料</h2>
+            <form id="userForm">
+                <label>姓名</label>
+                <input type="text" name="name" required>
+                <label>年龄</label>
+                <input type="number" name="age" required>
+                <label>性别</label>
+                <select name="gender" required>
+                    <option value="">请选择</option>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+                <label>兴趣爱好</label>
+                <textarea name="hobbies" rows="2"></textarea>
+                <label>自我评价</label>
+                <textarea name="description" rows="2"></textarea>
+                <label>头像</label>
+                <input type="file" name="avatar" accept="image/*">
+                <button type="submit">提交</button>
+            </form>
+        </section>
+
+        <section id="profiles" class="card">
+            <h2>会员展示</h2>
+            <div id="profileList"></div>
+        </section>
+
+        <section id="contact" class="card">
+            <h2>联系我们</h2>
+            <p>电话: 123-456-7890</p>
+            <p>邮箱: support@yuanlai.com</p>
+        </section>
+    </main>
+    <footer>
+        &copy; 2025 缘来相亲网
+    </footer>
+
+    <script>
+        const profileList = document.getElementById('profileList');
+
+        // 示例会员数据
+        const exampleProfiles = [
+            { name: '小明', age: 28, gender: '男', hobbies: '旅游, 美食', description: '阳光开朗，喜欢交朋友', avatar: 'https://via.placeholder.com/80?text=%E5%B0%8F%E6%98%8E' },
+            { name: '小红', age: 25, gender: '女', hobbies: '阅读, 电影', description: '温柔体贴，爱好广泛', avatar: 'https://via.placeholder.com/80?text=%E5%B0%8F%E7%BA%A2' },
+            { name: '小刚', age: 30, gender: '男', hobbies: '运动, 音乐', description: '乐观积极，喜欢尝试新事物', avatar: 'https://via.placeholder.com/80?text=%E5%B0%8F%E5%88%9A' }
+        ];
+
+        // 初始化显示示例会员
+        exampleProfiles.forEach(profile => {
+            const div = document.createElement('div');
+            div.className = 'profile-card';
+            div.innerHTML = `<img src='${profile.avatar}' alt='头像'>
+                             <div><strong>${profile.name}</strong> (${profile.age}岁, ${profile.gender})<br>
+                             爱好: ${profile.hobbies}<br>
+                             自我评价: ${profile.description}</div>`;
+            profileList.appendChild(div);
+        });
+
+        // 表单提交添加会员
+        const form = document.getElementById('userForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const data = new FormData(form);
+            const reader = new FileReader();
+            reader.onload = function() {
+                const profile = {
+                    name: data.get('name'),
+                    age: data.get('age'),
+                    gender: data.get('gender'),
+                    hobbies: data.get('hobbies'),
+                    description: data.get('description'),
+                    avatar: reader.result || 'https://via.placeholder.com/80'
+                };
+                const div = document.createElement('div');
+                div.className = 'profile-card';
+                div.innerHTML = `<img src='${profile.avatar}' alt='头像'>
+                                 <div><strong>${profile.name}</strong> (${profile.age}岁, ${profile.gender})<br>
+                                 爱好: ${profile.hobbies}<br>
+                                 自我评价: ${profile.description}</div>`;
+                profileList.appendChild(div);
+                form.reset();
+            };
+            const file = data.get('avatar');
+            if(file && file.size > 0){ reader.readAsDataURL(file); }
+            else{ reader.onload(); }
+        });
+    </script>
+</body>
+</html>
